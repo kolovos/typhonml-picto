@@ -1,0 +1,64 @@
+datatype String
+datatype int
+datatype Real
+
+entity Review {
+	id : String
+	user -> User."User.reviews"[1]
+	product :-> Product."Product.reviews"
+}
+
+entity Product {
+	id : String
+	name : String
+	description : String
+	reviews :-> Review."Review.product"[*]
+}
+
+
+entity Address {
+	street : String
+	number : String
+}
+
+entity User {
+	firstName : String
+	lastName : String
+	dob : String
+	basket -> Basket
+	orders -> Order[*]
+	addresses -> Address[*]
+	reviews -> Review."Review.user"[*]
+}
+
+entity Basket {
+	items -> OrderItem[0..*]
+}
+
+entity OrderItem {
+	quantity : int
+	product -> Product[1]
+}
+
+entity Order {
+	items -> OrderItem[0..*]
+	deliveryAddresss -> Address
+}
+
+relationaldb RelationalDatabase {
+	tables {
+		table {
+			ProductDB : Product
+			index productIndex {
+				attributes ('Product.name')
+			}
+			idSpec ('Product.name')
+		}
+	}
+}
+
+documentdb DocumentDatabase {
+	collections {
+		ReviewsDB : Review
+	}
+}

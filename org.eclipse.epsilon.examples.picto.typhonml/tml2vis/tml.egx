@@ -1,0 +1,46 @@
+/*
+- Limit the number of attributes to 10
+- Visualize indices
+- Visualise keys
+- Different colours according to the database they belong to
+- One diagram per database as well
+*/
+
+rule Tml2Dot {
+
+	template : "tml2dot.egl"
+
+	parameters : Map{
+		"mainEntityName" = "",
+		"entityNames" = Entity.all.name,
+		"path" = Sequence{"Model"},
+		"icon" = "diagram-ff0000",
+		"format" = "graphviz-dot",
+		"layers" = Sequence {
+			Map {"id"="attributes", "title"="Attributes"},
+			Map {"id"="relationLabels", "title"="Relation Labels", "active"=false}
+		}
+	}
+	
+}
+
+rule Entity2Dot 
+	transform e : Entity {
+
+	template : "tml2dot.egl"
+	
+	parameters : Map{
+		"mainEntityName" = e.name,
+		"entityNames" = Sequence{},
+		"path" = Sequence{"Model", "Entities", e.name},
+		"icon" = "diagram-ffffff",
+		"format" = "graphviz-dot",
+		"layers" = Sequence {
+			Map {"id"="attributes", "title"="Attributes"},
+			Map {"id"="relationLabels", "title"="Relation Labels"},
+			Map {"id"="incoming", "title"="Incoming Relations", "active"=true},
+			Map {"id"="outgoing", "title"="Outgoing Relations", "active"=true}
+		}
+	}
+	
+}

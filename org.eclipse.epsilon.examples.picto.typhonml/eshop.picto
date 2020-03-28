@@ -1,0 +1,15 @@
+<?nsuri picto?>
+<picto format="egx" template="tml2vis/tml.egx" standalone="true">
+	<model type="EMF">
+		<property name="modelFile" file="eshop.tml"/>
+		<property name="metamodelUri" value="http://org.typhon.dsls.typhonml.sirius"/>
+	</model>
+	<view path="Model">
+		<!--patch format="graphviz-dot">
+			<content>
++{rank=same;_Product_reviews;_Product}
+}
+			</content>
+		</patch-->
+	</view>
+</picto>

@@ -1,0 +1,152 @@
+digraph G {
+	graph[splines=ortho rankdir=LR]
+	node[fontname=Tahoma, fontsize=10, shape=record]
+	edge[fontname=Tahoma, fontsize=10, arrowtail=normal]
+
+[%var entities = getVisibleEntities();%]
+
+[%for (e in entities){%]
+	[%=e.getNodeName()%][shape=none, margin=0, label=<[%=e.getLabel()%]>]
+[%}%]
+
+[%if (isLayerActive("relationLabels")){%]
+	[%for (r in getUnidirectionalRelations()){%]
+		[%var relationNodeName = r.eContainer.getNodeName() + "_" + r.name;%]
+		[%=relationNodeName%][label=" [%=r.name%] ", shape=plaintext, margin=0,width=0,height=0]
+		[%=r.eContainer.getNodeName()%]->[%=relationNodeName%][arrowhead=none]
+		[%=relationNodeName%]->[%=r.type.getNodeName()%][arrowhead=[%=r.getArrow()%],arrowtail=none,dir=both];
+	[%}%]
+	
+	[%for (r in getBidirectionalRelations()){%]
+		[%var relationNodeName = r.eContainer.getNodeName() + "_" + r.name;%]
+		[%=relationNodeName%][label=" [%=r.name%]/[%=r.opposite.name%] ", shape=plaintext, margin=0,width=0,height=0]
+		[%=r.eContainer.getNodeName()%]->[%=relationNodeName%][arrowhead=[%=r.opposite.getArrow()%],dir=back]
+		[%=relationNodeName%]->[%=r.type.getNodeName()%][arrowhead=[%=r.getArrow()%]];
+	[%}%]
+[%}else{%]
+	[%for (r in getUnidirectionalRelations()){%]
+		[%=r.eContainer.getNodeName()%]->[%=r.type.getNodeName()%][arrowhead=[%=r.getArrow()%],arrowtail=none,tooltip="[%=r.name%]"];
+	[%}%]
+	
+	[%for (r in getBidirectionalRelations()){%]
+		[%=r.eContainer.getNodeName()%]->[%=r.type.getNodeName()%][arrowhead=[%=r.getArrow()%],arrowtail=[%=r.opposite.getArrow()%]];
+	[%}%]
+[%}%]
+
+
+
+}
+
+[%
+operation Entity getLabel() {
+	var label = "<table cellspacing='0' cellborder='0' cellpadding='1' bgcolor='" + self.getColour() + "'>";
+	label += "<tr><td sides='B' colspan='2' border='1' cellpadding='0'>" + 
+		"<table border='0' cellspacing='0' cellborder='0'>" + 
+		"<tr><td align='right' valign='middle'><img src='" + self.getIcon()+ "'></img></td>" + 
+		"<td align='left' valign='middle' href=\"javascript:top.showView('/Model/Entities/" + self.name + "')\" tooltip='Go'>" + self.name + " </td></tr></table></td></tr>";
+	
+	label += "<tr><td></td><td></td></tr>";
+	
+	if (isLayerActive("attributes")){
+		for (a in self.attributes.sortBy(a|a.name.toLowerCase())) {
+			label += "<tr>";
+			label += "<td><img src='" + a.getIcon() + "'></img></td><td align='left'>" + a.getLabel() + "</td>";
+			label += "</tr>";
+		}
+	}
+	
+	if (self.attributes.isEmpty() or not isLayerActive("attributes")){
+		label += "<tr>";
+		label += "<td> </td><td> </td>";
+		label += "</tr>";
+	}
+	
+	label += "</table>";
+	return label;
+}
+
+operation Entity getIcon() {
+	return new Native("java.io.File")
+		(System.context.module.file.parent, "icons/table.gif").absolutePath;
+}
+
+operation Attribute getLabel() {
+	return self.name + " : " + self.type.name + " ";
+}
+
+operation Attribute getIcon() {
+	return new Native("java.io.File")
+		(System.context.module.file.parent, "icons/attribute.gif").absolutePath;
+}
+
+operation Entity getNodeName() {
+	return "_" + self.name;
+}
+
+operation getVisibleRelations() {
+	return Relation.all.select(r|entities.includes(r.type) and entities.includes(r.eContainer));
+}
+
+operation getBidirectionalRelations() {
+	var visibleRelations = getVisibleRelations();
+	return visibleRelations.select(r|
+		r.opposite.isDefined() and 
+		visibleRelations.includes(r.opposite) and
+		visibleRelations.indexOf(r) > visibleRelations.indexOf(r.opposite));
+}
+
+operation getUnidirectionalRelations() {
+	var bidirectionalRelations = getBidirectionalRelations();
+	return getVisibleRelations().excludingAll(bidirectionalRelations).
+		excludingAll(bidirectionalRelations.opposite);
+}
+
+operation Relation getArrow() {
+	if (self.cardinality = Cardinality#one_many or self.cardinality = Cardinality#zero_many) {
+		return "crow";
+	}
+	else {
+		return "open";
+	}
+}
+
+operation isLayerActive(id : String) {
+	var layer = layers.selectOne(l|l.id = id);
+	if (layer.isDefined()) {
+		return layer.active;
+	}
+	else {
+		return true;
+	}
+}
+
+operation getVisibleEntities() {
+	if (mainEntityName.isDefined()) {
+		var entity = Entity.all.selectOne(e|e.name = mainEntityName);
+		if (entity.isDefined()) {
+			var entities : OrderedSet;
+			entities.add(entity);
+			if (isLayerActive("outgoing")) entities.addAll(entity.relations.collect(r|r.type));
+			if (isLayerActive("incoming")) entities.addAll(Entity.all.select(e|e.relations.exists(r|r.type = entity)));
+			return entities;
+			/*
+			return e.relations.collect(r|r.type).including(entity).
+			includingAll(Entity.all.select(e|e.relations.exists(r|r.type = entity)));*/
+		}
+		else return Sequence{};
+	}
+	else {
+		return Entity.all.select(e|entityNames.includes(e.name));
+	}
+}
+
+operation Entity getColour() {
+	if (mainEntityName.isDefined() and mainEntityName == self.name) {
+		return "#c8f0a1";
+	}
+	else {
+		return "#f1f3f5";
+	}
+}
+
+%]
