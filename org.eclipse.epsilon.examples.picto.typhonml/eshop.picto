@@ -4,12 +4,7 @@
 		<property name="modelFile" file="eshop.tml"/>
 		<property name="metamodelUri" value="http://org.typhon.dsls.typhonml.sirius"/>
 	</model>
-	<view path="Model">
-		<!--patch format="graphviz-dot">
-			<content>
-+{rank=same;_Product_reviews;_Product}
-}
-			</content>
-		</patch-->
+	<view path="Model, Custom, User-Basket-Order" type="EntitiesDiagram" icon="diagram-00ff00">
+		<parameter name="entityNames" values="User, Basket, Order"/>
 	</view>
 </picto>

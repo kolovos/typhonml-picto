@@ -6,7 +6,7 @@
 - One diagram per database as well
 */
 
-rule Tml2Dot {
+rule EntitiesDiagram {
 
 	template : "tml2dot.egl"
 
@@ -24,7 +24,7 @@ rule Tml2Dot {
 	
 }
 
-rule Entity2Dot 
+rule EntityDiagram 
 	transform e : Entity {
 
 	template : "tml2dot.egl"
