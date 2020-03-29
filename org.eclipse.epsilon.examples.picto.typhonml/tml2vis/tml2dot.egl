@@ -152,7 +152,7 @@ if (mainEntityName.isDefined() and mainEntityName == self.name) {
 	else {
 		if (self.isTable()) return "#f1f3f5";
 		else if (self.isCollection()) return "#fffcdc";
-		else return "white";
+		else return "#F9F7F5";
 	}
 }
 

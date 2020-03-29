@@ -68,9 +68,6 @@ relationaldb RelationalDatabase {
 		table {
 			T_Order : Order
 		}
-		table {
-			T_Address : Address
-		}
 	}
 }
 
