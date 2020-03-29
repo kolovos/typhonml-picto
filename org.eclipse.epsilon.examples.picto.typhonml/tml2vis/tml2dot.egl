@@ -66,7 +66,9 @@ operation Entity getLabel() {
 }
 
 operation Entity getIcon() {
-	return getImage("icons/table.gif");
+	if (self.isTable()) return getImage("icons/table.gif");
+	else if (self.isCollection()) return getImage("icons/collection.gif");
+	else return getImage("icons/entity.gif");
 }
 
 operation Attribute getLabel() {
@@ -74,6 +76,8 @@ operation Attribute getLabel() {
 }
 
 operation Attribute getIcon() {
+	if (self.eContainer.isTable()) return getImage("icons/column.gif");
+	else if (self.eContainer.isCollection()) return getImage("icons/field.gif");
 	return getImage("icons/attribute.gif");
 }
 
@@ -142,12 +146,22 @@ operation getVisibleEntities() {
 }
 
 operation Entity getColour() {
-	if (mainEntityName.isDefined() and mainEntityName == self.name) {
+if (mainEntityName.isDefined() and mainEntityName == self.name) {
 		return "#c8f0a1";
 	}
 	else {
-		return "#f1f3f5";
+		if (self.isTable()) return "#f1f3f5";
+		else if (self.isCollection()) return "#fffcdc";
+		else return "white";
 	}
+}
+
+operation Entity isTable() {
+	return RelationalDB.all.tables.flatten().exists(t|t.entity = self);
+}
+
+operation Entity isCollection() {
+	return DocumentDB.all.collections.flatten().exists(c|c.entity = self);
 }
 
 %]

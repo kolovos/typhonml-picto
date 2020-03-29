@@ -8,13 +8,18 @@ entity Review {
 	product :-> Product."Product.reviews"
 }
 
+entity Comment {
+	responses -> Comment."Comment.inResponseTo"[0..*]
+	inResponseTo -> Comment."Comment.responses"
+	review -> Review
+}
+
 entity Product {
 	id : String
 	name : String
 	description : String
 	reviews :-> Review."Review.product"[*]
 }
-
 
 entity Address {
 	street : String
@@ -48,17 +53,30 @@ entity Order {
 relationaldb RelationalDatabase {
 	tables {
 		table {
-			ProductDB : Product
+			T_Product : Product
 			index productIndex {
 				attributes ('Product.name')
 			}
 			idSpec ('Product.name')
+		}
+		table {
+			T_OrderItem : OrderItem
+		}
+		table {
+			T_Basket : Basket
+		}
+		table {
+			T_Order : Order
+		}
+		table {
+			T_Address : Address
 		}
 	}
 }
 
 documentdb DocumentDatabase {
 	collections {
-		ReviewsDB : Review
+		Reviews : Review
+		Comments : Comment
 	}
 }
