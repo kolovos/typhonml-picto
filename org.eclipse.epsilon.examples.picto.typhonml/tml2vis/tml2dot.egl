@@ -29,7 +29,7 @@ digraph G {
 	[%}%]
 	
 	[%for (r in getBidirectionalRelations()){%]
-		[%=r.eContainer.getNodeName()%]->[%=r.type.getNodeName()%][arrowhead=[%=r.getArrow()%],arrowtail=[%=r.opposite.getArrow()%]];
+		[%=r.eContainer.getNodeName()%]->[%=r.type.getNodeName()%][arrowhead=[%=r.opposite.getArrow()%],arrowtail=[%=r.getArrow()%],dir=both];
 	[%}%]
 [%}%]
 
