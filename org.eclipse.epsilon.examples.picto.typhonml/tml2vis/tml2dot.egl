@@ -1,7 +1,7 @@
 digraph G {
 	graph[splines=ortho rankdir=LR]
 	node[fontname=Tahoma, fontsize=10, shape=record]
-	edge[fontname=Tahoma, fontsize=10, arrowtail=normal]
+	edge[fontname=Tahoma, fontsize=10]
 
 [%var entities = getVisibleEntities();%]
 
@@ -20,7 +20,7 @@ digraph G {
 	[%for (r in getBidirectionalRelations()){%]
 		[%var relationNodeName = r.eContainer.getNodeName() + "_" + r.name;%]
 		[%=relationNodeName%][label=" [%=r.name%]/[%=r.opposite.name%] ", shape=plaintext, margin=0,width=0,height=0]
-		[%=r.eContainer.getNodeName()%]->[%=relationNodeName%][arrowhead=[%=r.opposite.getArrow()%],dir=back]
+		[%=r.eContainer.getNodeName()%]->[%=relationNodeName%][arrowtail=[%=r.opposite.getArrow()%],dir=back]
 		[%=relationNodeName%]->[%=r.type.getNodeName()%][arrowhead=[%=r.getArrow()%]];
 	[%}%]
 [%}else{%]
@@ -66,8 +66,7 @@ operation Entity getLabel() {
 }
 
 operation Entity getIcon() {
-	return new Native("java.io.File")
-		(System.context.module.file.parent, "icons/table.gif").absolutePath;
+	return getImage("icons/table.gif");
 }
 
 operation Attribute getLabel() {
@@ -75,8 +74,7 @@ operation Attribute getLabel() {
 }
 
 operation Attribute getIcon() {
-	return new Native("java.io.File")
-		(System.context.module.file.parent, "icons/attribute.gif").absolutePath;
+	return getImage("icons/attribute.gif");
 }
 
 operation Entity getNodeName() {
@@ -91,8 +89,11 @@ operation getBidirectionalRelations() {
 	var visibleRelations = getVisibleRelations();
 	return visibleRelations.select(r|
 		r.opposite.isDefined() and 
-		visibleRelations.includes(r.opposite) and
-		visibleRelations.indexOf(r) > visibleRelations.indexOf(r.opposite));
+		visibleRelations.includes(r.opposite) and (
+			r.opposite.opposite.isUndefined() or
+			visibleRelations.indexOf(r) > visibleRelations.indexOf(r.opposite)
+		)
+		);
 }
 
 operation getUnidirectionalRelations() {
