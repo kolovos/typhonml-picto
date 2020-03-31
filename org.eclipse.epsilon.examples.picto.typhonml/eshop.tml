@@ -1,30 +1,26 @@
-datatype String
-datatype int
-datatype Real
-
 entity Review {
-	id : String
+	id : string
 	user -> User."User.reviews"[1]
 	product :-> Product."Product.reviews"
 }
 
 entity Product {
-	id : String
-	name : String
-	description : String
+	id : string
+	name : string
+	description : string
 	reviews :-> Review."Review.product"[*]
 }
 
 
 entity Address {
-	street : String
-	number : String
+	street : string
+	number : string
 }
 
 entity User {
-	firstName : String
-	lastName : String
-	dob : String
+	firstName : string
+	lastName : string
+	dob : string
 	basket -> Basket
 	orders -> Order[*]
 	addresses -> Address[*]
