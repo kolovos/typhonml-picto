@@ -72,7 +72,28 @@ operation Entity getIcon() {
 }
 
 operation Attribute getLabel() {
-	return self.name + " : " + self.type.name + " ";
+	var attrType;
+	if(self.type.isStringType()){
+		attrType = "string";
+	}else if(self.type.isIntType()){
+		attrType = "int";
+	}else if(self.type.isBigintType()){
+		attrType = "bigint";
+	}else if(self.type.isTextType()){
+		attrType = "text";
+	}else if(self.type.isPointType()){
+		attrType = "point";
+	}else if(self.type.isPolygonType()){
+		attrType = "poligon";
+	}else if(self.type.isBoolType()){
+		attrType = "bool";
+	}else if(self.type.isBlobType()){
+		attrType = "blob";
+	}else if(self.type.isFreetextType()){
+		attrType = "freetext";
+	}
+	
+	return self.name + " : " + attrType + " ";
 }
 
 operation Attribute getIcon() {
@@ -163,5 +184,47 @@ operation Entity isTable() {
 operation Entity isCollection() {
 	return DocumentDB.all.collections.flatten().exists(c|c.entity = self);
 }
+
+operation PrimitiveDataType isStringType(){
+	return self.isTypeOf(StringType);
+}
+
+operation PrimitiveDataType isIntType(){
+	return self.isTypeOf(IntType);
+}
+
+operation PrimitiveDataType isBigintType(){
+	return self.isTypeOf(BigintType);
+}
+
+operation PrimitiveDataType isTextType(){
+	return self.isTypeOf(TextType);
+}
+
+operation PrimitiveDataType isPointType(){
+	return self.isTypeOf(PointType);
+}
+
+operation PrimitiveDataType isPolygonType(){
+	return self.isTypeOf(PolygonType);
+}
+
+operation PrimitiveDataType isBoolType(){
+	return self.isTypeOf(BoolType);
+}
+
+operation PrimitiveDataType isFloatType(){
+	return self.isTypeOf(FloatType);
+}
+
+operation PrimitiveDataType isBlobType(){
+	return self.isTypeOf(BlobType);
+}
+
+operation PrimitiveDataType isFreetextType(){
+	return self.isTypeOf(FreetextType);
+}
+
+
 
 %]
