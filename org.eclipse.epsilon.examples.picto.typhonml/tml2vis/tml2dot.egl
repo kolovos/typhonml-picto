@@ -1,7 +1,7 @@
 digraph G {
 	graph[splines=ortho rankdir=LR]
 	node[fontname=Tahoma, fontsize=10, shape=record]
-	edge[fontname=Tahoma, fontsize=10, arrowtail=normal]
+	edge[fontname=Tahoma, fontsize=10]
 
 [%var entities = getVisibleEntities();%]
 
@@ -20,7 +20,7 @@ digraph G {
 	[%for (r in getBidirectionalRelations()){%]
 		[%var relationNodeName = r.eContainer.getNodeName() + "_" + r.name;%]
 		[%=relationNodeName%][label=" [%=r.name%]/[%=r.opposite.name%] ", shape=plaintext, margin=0,width=0,height=0]
-		[%=r.eContainer.getNodeName()%]->[%=relationNodeName%][arrowhead=[%=r.opposite.getArrow()%],dir=back]
+		[%=r.eContainer.getNodeName()%]->[%=relationNodeName%][arrowtail=[%=r.opposite.getArrow()%],dir=back]
 		[%=relationNodeName%]->[%=r.type.getNodeName()%][arrowhead=[%=r.getArrow()%]];
 	[%}%]
 [%}else{%]
@@ -29,7 +29,7 @@ digraph G {
 	[%}%]
 	
 	[%for (r in getBidirectionalRelations()){%]
-		[%=r.eContainer.getNodeName()%]->[%=r.type.getNodeName()%][arrowhead=[%=r.getArrow()%],arrowtail=[%=r.opposite.getArrow()%]];
+		[%=r.eContainer.getNodeName()%]->[%=r.type.getNodeName()%][arrowhead=[%=r.opposite.getArrow()%],arrowtail=[%=r.getArrow()%],dir=both];
 	[%}%]
 [%}%]
 
@@ -66,8 +66,9 @@ operation Entity getLabel() {
 }
 
 operation Entity getIcon() {
-	return new Native("java.io.File")
-		(System.context.module.file.parent, "icons/table.gif").absolutePath;
+	if (self.isTable()) return getImage("icons/table.gif");
+	else if (self.isCollection()) return getImage("icons/collection.gif");
+	else return getImage("icons/entity.gif");
 }
 
 operation Attribute getLabel() {
@@ -75,8 +76,9 @@ operation Attribute getLabel() {
 }
 
 operation Attribute getIcon() {
-	return new Native("java.io.File")
-		(System.context.module.file.parent, "icons/attribute.gif").absolutePath;
+	if (self.eContainer.isTable()) return getImage("icons/column.gif");
+	else if (self.eContainer.isCollection()) return getImage("icons/field.gif");
+	return getImage("icons/attribute.gif");
 }
 
 operation Entity getNodeName() {
@@ -91,8 +93,11 @@ operation getBidirectionalRelations() {
 	var visibleRelations = getVisibleRelations();
 	return visibleRelations.select(r|
 		r.opposite.isDefined() and 
-		visibleRelations.includes(r.opposite) and
-		visibleRelations.indexOf(r) > visibleRelations.indexOf(r.opposite));
+		visibleRelations.includes(r.opposite) and (
+			r.opposite.opposite.isUndefined() or
+			visibleRelations.indexOf(r) > visibleRelations.indexOf(r.opposite)
+		)
+		);
 }
 
 operation getUnidirectionalRelations() {
@@ -141,12 +146,22 @@ operation getVisibleEntities() {
 }
 
 operation Entity getColour() {
-	if (mainEntityName.isDefined() and mainEntityName == self.name) {
+if (mainEntityName.isDefined() and mainEntityName == self.name) {
 		return "#c8f0a1";
 	}
 	else {
-		return "#f1f3f5";
+		if (self.isTable()) return "#f1f3f5";
+		else if (self.isCollection()) return "#fffcdc";
+		else return "#F9F7F5";
 	}
+}
+
+operation Entity isTable() {
+	return RelationalDB.all.tables.flatten().exists(t|t.entity = self);
+}
+
+operation Entity isCollection() {
+	return DocumentDB.all.collections.flatten().exists(c|c.entity = self);
 }
 
 %]

@@ -1,9 +1,19 @@
 <?nsuri picto?>
-<picto format="egx" template="tml2vis/tml.egx" standalone="true">
+<picto format="egx" template="platform:/resource/org.eclipse.epsilon.examples.picto.typhonml/tml2vis/tml.egx" standalone="true">
 	<model type="EMF">
 		<property name="modelFile" file="eshop.tml"/>
 		<property name="metamodelUri" value="http://org.typhon.dsls.typhonml.sirius"/>
 	</model>
+	<view name="Model">
+		<patch format="graphviz-dot" apply="not relationLabels and attributes">
+			<content>
++ __note[shape="note", label="User and Address have not\nbeen mapped to databases", style="filled", fillcolor="mistyrose"]
++ __note->_User[style=dashed, dir=none, constraint=false]
++ __note->_Address[style=dashed, dir=none]
+}
+			</content>
+		</patch>
+	</view>
 	<view path="Model, Custom, User-Basket-Order" type="EntitiesDiagram" icon="diagram-00ff00">
 		<parameter name="entityNames" values="User, Basket, Order"/>
 	</view>
