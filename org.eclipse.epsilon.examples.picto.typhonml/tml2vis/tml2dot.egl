@@ -185,19 +185,19 @@ operation Entity isCollection() {
 	return DocumentDB.all.collections.flatten().exists(c|c.entity = self);
 }
 
-operation PrimitiveDataType isStringType(){
+operation DataType isStringType(){
 	return self.isTypeOf(StringType);
 }
 
-operation PrimitiveDataType isIntType(){
+operation DataType isIntType(){
 	return self.isTypeOf(IntType);
 }
 
-operation PrimitiveDataType isBigintType(){
+operation DataType isBigintType(){
 	return self.isTypeOf(BigintType);
 }
 
-operation PrimitiveDataType isTextType(){
+operation DataType isTextType(){
 	return self.isTypeOf(TextType);
 }
 
@@ -205,23 +205,23 @@ operation PrimitiveDataType isPointType(){
 	return self.isTypeOf(PointType);
 }
 
-operation PrimitiveDataType isPolygonType(){
+operation DataType isPolygonType(){
 	return self.isTypeOf(PolygonType);
 }
 
-operation PrimitiveDataType isBoolType(){
+operation DataType isBoolType(){
 	return self.isTypeOf(BoolType);
 }
 
-operation PrimitiveDataType isFloatType(){
+operation DataType isFloatType(){
 	return self.isTypeOf(FloatType);
 }
 
-operation PrimitiveDataType isBlobType(){
+operation DataType isBlobType(){
 	return self.isTypeOf(BlobType);
 }
 
-operation PrimitiveDataType isFreetextType(){
+operation DataType isFreetextType(){
 	return self.isTypeOf(FreetextType);
 }
 
