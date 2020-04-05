@@ -201,7 +201,7 @@ operation DataType isTextType(){
 	return self.isTypeOf(TextType);
 }
 
-operation PrimitiveDataType isPointType(){
+operation DataType isPointType(){
 	return self.isTypeOf(PointType);
 }
 
